@@ -161,7 +161,6 @@
 			attach_special(W, user)
 		else
 			..()
-		return
 
 
 	attack_self(mob/user as mob)
@@ -191,7 +190,6 @@
 				a_right.loc = T
 			spawn(0)
 				qdel(src)
-		return
 
 
 	process_activation(var/obj/D, var/normal = 1, var/special = 1)

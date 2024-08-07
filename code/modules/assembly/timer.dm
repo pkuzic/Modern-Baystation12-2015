@@ -69,9 +69,6 @@
 
 
 	interact(mob/user as mob)//TODO: Have this use the wires
-		if(!secured)
-			user.show_message("\red The [name] is unsecured!")
-			return 0
 		var/second = time % 60
 		var/minute = (time - second) / 60
 		var/dat = text("<TT><B>Timing Unit</B>\n[] []:[]\n<A href='?src=\ref[];tp=-30'>-</A> <A href='?src=\ref[];tp=-1'>-</A> <A href='?src=\ref[];tp=1'>+</A> <A href='?src=\ref[];tp=30'>+</A>\n</TT>", (timing ? text("<A href='?src=\ref[];time=0'>Timing</A>", src) : text("<A href='?src=\ref[];time=1'>Not Timing</A>", src)), minute, second, src, src, src, src)
@@ -83,7 +80,12 @@
 
 
 	Topic(href, href_list)
-		if(..()) return 1
+		if(href_list["close"])
+			usr << browse(null, "window=timer")
+			return ..()
+
+		if(!..())
+			return FALSE
 		if(!usr.canmove || usr.stat || usr.restrained() || !in_range(loc, usr))
 			usr << browse(null, "window=timer")
 			onclose(usr, "timer")
@@ -98,11 +100,7 @@
 			time += tp
 			time = min(max(round(time), 0), 600)
 
-		if(href_list["close"])
-			usr << browse(null, "window=timer")
-			return
-
 		if(usr)
 			attack_self(usr)
 
-		return
+		return TRUE

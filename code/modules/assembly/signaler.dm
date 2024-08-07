@@ -45,32 +45,32 @@
 //		else
 //			t1 = "-------"	Speaker: [src.listening ? "<A href='byond://?src=\ref[src];listen=0'>Engaged</A>" : "<A href='byond://?src=\ref[src];listen=1'>Disengaged</A>"]<BR>
 		var/dat = {"
-	<TT>
+			<TT>
+			<A href='byond://?src=\ref[src];send=1'>Send Signal</A><BR>
+			<B>Frequency/Code</B> for signaler:<BR>
+			Frequency:
+			<A href='byond://?src=\ref[src];freq=-10'>-</A>
+			<A href='byond://?src=\ref[src];freq=-2'>-</A>
+			[format_frequency(src.frequency)]
+			<A href='byond://?src=\ref[src];freq=2'>+</A>
+			<A href='byond://?src=\ref[src];freq=10'>+</A><BR>
 
-	<A href='byond://?src=\ref[src];send=1'>Send Signal</A><BR>
-	<B>Frequency/Code</B> for signaler:<BR>
-	Frequency:
-	<A href='byond://?src=\ref[src];freq=-10'>-</A>
-	<A href='byond://?src=\ref[src];freq=-2'>-</A>
-	[format_frequency(src.frequency)]
-	<A href='byond://?src=\ref[src];freq=2'>+</A>
-	<A href='byond://?src=\ref[src];freq=10'>+</A><BR>
-
-	Code:
-	<A href='byond://?src=\ref[src];code=-5'>-</A>
-	<A href='byond://?src=\ref[src];code=-1'>-</A>
-	[src.code]
-	<A href='byond://?src=\ref[src];code=1'>+</A>
-	<A href='byond://?src=\ref[src];code=5'>+</A><BR>
-	[t1]
-	</TT>"}
+			Code:
+			<A href='byond://?src=\ref[src];code=-5'>-</A>
+			<A href='byond://?src=\ref[src];code=-1'>-</A>
+			[src.code]
+			<A href='byond://?src=\ref[src];code=1'>+</A>
+			<A href='byond://?src=\ref[src];code=5'>+</A><BR>
+			[t1]
+			</TT>"}
 		user << browse(dat, "window=radio")
 		onclose(user, "radio")
 		return
 
 
 	Topic(href, href_list)
-		if(..()) return 1
+		if(!..())
+			return FALSE
 
 		if(!usr.canmove || usr.stat || usr.restrained() || !in_range(loc, usr))
 			usr << browse(null, "window=radio")
@@ -96,7 +96,7 @@
 		if(usr)
 			attack_self(usr)
 
-		return
+		return TRUE
 
 
 	proc/signal()

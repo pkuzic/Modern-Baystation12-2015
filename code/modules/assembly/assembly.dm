@@ -128,15 +128,25 @@
 
 
 	attack_self(mob/user as mob)
-		if(!user)	return 0
+		if(!user || !can_interact(user))
+			return FALSE
 		user.set_machine(src)
 		interact(user)
-		return 1
+		return TRUE
 
+
+	proc/can_interact(mob/living/user)
+		if(!secured)
+			user.show_message(SPAN_WARN("The [name] is unsecured!"))
+			return FALSE
+		var/obj/item/actual_holder = holder || src
+		return !in_range(actual_holder, src)
 
 	interact(mob/user as mob)
 		return //HTML MENU FOR WIRES GOES HERE
 
+	CanUseTopic()
+		return !can_interact(usr)
 /*
 	var/small_icon_state = null//If this obj will go inside the assembly use this for icons
 	var/list/small_icon_state_overlays = null//Same here

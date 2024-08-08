@@ -16,6 +16,9 @@
 
 /obj/item/device/flashlight/initialize()
 	..()
+	update_icon()
+
+/obj/item/device/flashlight/update_icon()
 	if(on)
 		icon_state = "[initial(icon_state)]-on"
 		set_light(brightness_on)
@@ -23,19 +26,12 @@
 		icon_state = initial(icon_state)
 		set_light(0)
 
-/obj/item/device/flashlight/proc/update_brightness(var/mob/user = null)
-	if(on)
-		icon_state = "[initial(icon_state)]-on"
-		set_light(brightness_on)
-	else
-		set_light(0)
-
 /obj/item/device/flashlight/attack_self(mob/user)
 	if(!isturf(user.loc))
 		user << "You cannot turn the light on while in this [user.loc]." //To prevent some lighting anomalities.
 		return 0
 	on = !on
-	update_brightness(user)
+	update_icon()
 	return 1
 
 
@@ -58,15 +54,21 @@
 		if(M == user)	//they're using it on themselves
 			if(!M.blinded)
 				flick("flash", M.flash)
-				M.visible_message("<span class='notice'>[M] directs [src] to \his eyes.</span>", \
-									 "<span class='notice'>You wave the light in front of your eyes! Trippy!</span>")
+				M.visible_message(
+					"<span class='notice'>[M] directs [src] to \his eyes.</span>",
+					"<span class='notice'>You wave the light in front of your eyes! Trippy!</span>"
+				)
 			else
-				M.visible_message("<span class='notice'>[M] directs [src] to \his eyes.</span>", \
-									 "<span class='notice'>You wave the light in front of your eyes.</span>")
+				M.visible_message(
+					"<span class='notice'>[M] directs [src] to \his eyes.</span>",
+					"<span class='notice'>You wave the light in front of your eyes.</span>"
+				)
 			return
 
-		user.visible_message("<span class='notice'>[user] directs [src] to [M]'s eyes.</span>", \
-							 "<span class='notice'>You direct [src] to [M]'s eyes.</span>")
+		user.visible_message(
+			"<span class='notice'>[user] directs [src] to [M]'s eyes.</span>",
+			"<span class='notice'>You direct [src] to [M]'s eyes.</span>"
+		)
 
 		if(istype(M, /mob/living/carbon/human))	//robots and aliens are unaffected
 			if(M.stat == DEAD || M.sdisabilities & BLIND)	//mob is dead or fully blind
@@ -149,6 +151,11 @@
 	fuel = rand(800, 1000) // Sorry for changing this so much but I keep under-estimating how long X number of ticks last in seconds.
 	..()
 
+/obj/item/device/flashlight/flare/update_icon()
+	..()
+	if(!fuel)
+		icon_state = icon_state = "[initial(icon_state)]-empty"
+
 /obj/item/device/flashlight/flare/process()
 	var/turf/pos = get_turf(src)
 	if(pos)
@@ -156,19 +163,13 @@
 	fuel = max(fuel - 1, 0)
 	if(!fuel || !on)
 		turn_off()
-		if(!fuel)
-			src.icon_state = "[initial(icon_state)]-empty"
 		processing_objects -= src
 
 /obj/item/device/flashlight/flare/proc/turn_off()
 	on = 0
 	src.force = initial(src.force)
 	src.damtype = initial(src.damtype)
-	if(ismob(loc))
-		var/mob/U = loc
-		update_brightness(U)
-	else
-		update_brightness(null)
+	update_icon()
 
 /obj/item/device/flashlight/flare/attack_self(mob/user)
 
@@ -182,7 +183,10 @@
 	. = ..()
 	// All good, turn it on.
 	if(.)
-		user.visible_message("<span class='notice'>[user] activates the flare.</span>", "<span class='notice'>You pull the cord on the flare, activating it!</span>")
+		user.visible_message(
+			"<span class='notice'>[user] activates the flare.</span>",
+			"<span class='notice'>You pull the cord on the flare, activating it!</span>"
+		)
 		src.force = on_damage
 		src.damtype = "fire"
 		processing_objects += src
@@ -198,11 +202,9 @@
 	brightness_on = 6
 	on = 1 //Bio-luminesence has one setting, on.
 
-/obj/item/device/flashlight/slime/New()
-	set_light(brightness_on)
-	spawn(1) //Might be sloppy, but seems to be necessary to prevent further runtimes and make these work as intended... don't judge me!
-		update_brightness()
-		icon_state = initial(icon_state)
+/obj/item/device/flashlight/slime/update_icon()
+	..()
+	icon_state = initial(icon_state)
 
 /obj/item/device/flashlight/slime/attack_self(mob/user)
 	return //Bio-luminescence does not toggle.
